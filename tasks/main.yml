@@ -1,0 +1,25 @@
+---
+- name: Check if grub-customizer is already installed
+  ansible.builtin.command: dpkg-query -W {{ grub_customizer_package_name }}
+  register: grub_customizer_installed
+  failed_when: false
+  changed_when: false
+
+# Using ubuntu_codename fact (set by tasks/set_ubuntu_codename.yml in pre_tasks)
+# to avoid apt_repository picking up the Mint codename (e.g. zena) instead of
+# the Ubuntu base codename (e.g. noble).
+- name: Add PPA repository for grub-customizer
+  ansible.builtin.apt_repository:
+    repo: "deb https://ppa.launchpadcontent.net/danielrichter2007/grub-customizer/ubuntu {{ ubuntu_codename }} main"
+    state: present
+  become: true
+  ignore_errors: true  # Debian does not support PPAs, falls back to default repo
+  when: grub_customizer_installed.rc != 0
+
+- name: Install grub-customizer
+  ansible.builtin.apt:
+    name: "{{ grub_customizer_package_name }}"
+    state: present
+    update_cache: true
+  become: true
+  when: grub_customizer_installed.rc != 0
