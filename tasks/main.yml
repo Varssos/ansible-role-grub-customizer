@@ -5,15 +5,14 @@
   failed_when: false
   changed_when: false
 
-# Using ubuntu_codename fact (set by tasks/set_ubuntu_codename.yml in pre_tasks)
-# to avoid apt_repository picking up the Mint codename (e.g. zena) instead of
-# the Ubuntu base codename (e.g. noble).
+# add-apt-repository handles GPG key import automatically for ppa: shorthand.
+# On noble the PPA doesn't exist yet — ignore_errors allows fallback to distro repos
+# (e.g. Linux Mint ships grub-customizer in its own repo).
+# On Debian PPAs are not supported — also ignored.
 - name: Add PPA repository for grub-customizer
-  ansible.builtin.apt_repository:
-    repo: "deb https://ppa.launchpadcontent.net/danielrichter2007/grub-customizer/ubuntu {{ ubuntu_codename }} main"
-    state: present
+  ansible.builtin.shell: add-apt-repository ppa:danielrichter2007/grub-customizer -y
   become: true
-  ignore_errors: true  # Debian does not support PPAs, falls back to default repo
+  ignore_errors: true
   when: grub_customizer_installed.rc != 0
 
 - name: Install grub-customizer
