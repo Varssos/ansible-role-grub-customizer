@@ -12,6 +12,7 @@
 - name: Add PPA repository for grub-customizer
   ansible.builtin.shell: add-apt-repository ppa:danielrichter2007/grub-customizer -y
   become: true
+  changed_when: true
   ignore_errors: true
   when: grub_customizer_installed.rc != 0
 
