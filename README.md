@@ -32,6 +32,24 @@ On Linux Mint, `ansible_facts.distribution_release` returns the Mint codename (e
     - role: grub-customizer
 ```
 
+## Manual setup (without Ansible)
+
+On Ubuntu, if the PPA supports your release:
+
+```bash
+sudo apt install software-properties-common
+sudo add-apt-repository ppa:danielrichter2007/grub-customizer -y
+```
+
+Skip the PPA on Debian, or when your distribution already provides the
+package (for example Linux Mint). The role tolerates PPA setup failure and
+attempts installation from available repositories:
+
+```bash
+sudo apt update
+sudo apt install grub-customizer
+```
+
 ## License
 
 MIT
